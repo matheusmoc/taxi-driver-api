@@ -1,6 +1,7 @@
 <?php
 namespace App\Jobs;
 
+use App\Events\DriverAvailable;
 use App\Models\Ride;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -41,8 +42,11 @@ class UpdateRideStatusJob implements ShouldQueue
             $this->ride->update([
                 'status' => 'Finalizada',
                 'data_hora_fim' => now(),
-                'valor' => $this->ride->valor ?? 0.00,
+                'valor' => $this->ride->valor,
             ]);
+    
+            // Libera o motorista para novas corridas
+            event(new DriverAvailable($this->ride->driver_id));
         }
     }
 }
