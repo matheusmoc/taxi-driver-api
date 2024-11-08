@@ -4,11 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Passenger;
 use App\Models\Ride;
-use AMQPStreamConnection;
-use AMQPMessage;
 use Illuminate\Http\Request;
 use App\Jobs\UpdateRideStatusJob;
-use App\Events\DriverAvailable;
 use PhpAmqpLib\Connection\AMQPStreamConnection as ConnectionAMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage as MessageAMQPMessage;
 
@@ -44,6 +41,7 @@ class RideController extends Controller
                 'status' => 'Aguardando Motorista',
                 'origem' => $request->origem,
                 'destino' => $request->destino,
+                'valor' => $request->valor,
                 'data_hora_solicitacao' => now(),
             ]);
     
@@ -67,11 +65,11 @@ class RideController extends Controller
             'driver_id' => $request->driver_id,
             'origem' => $request->origem,
             'destino' => $request->destino,
+            'valor' => $request->valor,
             'data_hora_solicitacao' => now(),
             'data_hora_inicio' => now(),
         ]);
     
-        // Se o motorista não estiver ocupado, prosseguir com a execução da corrida
         UpdateRideStatusJob::dispatch($ride);
     
         return response()->json($ride, 201);
@@ -88,10 +86,7 @@ class RideController extends Controller
             return response()->json(['error' => 'O valor da corrida é obrigatório.'], 400);
         }
     
-        // Atualiza a corrida e despacha o job para processar a mudança de status
         $ride->update(['status' => $status, 'valor' => $valor]);
-    
-        // Dispara o job para atualizar o status da corrida de maneira assíncrona
         UpdateRideStatusJob::dispatch($ride, $status, $driverId);
     
         return response()->json(['message' => 'Status da corrida em atualização.'], 202);
