@@ -19,11 +19,20 @@ class RideController extends Controller
         $this->connection = new ConnectionAMQPStreamConnection('localhost', 5672, 'guest', 'guest');
         $this->channel = $this->connection->channel();
 
-        // Declara uma fila com prioridade de 0 a 10
         $this->channel->queue_declare('ride_requests', false, true, false, false, false, [
             'x-max-priority' => ['I', 10]
         ]);
     }
+
+    public function index(Request $request)
+    {
+        $rides = Ride::orderBy('id', 'desc')->get();
+    
+        return $rides->isEmpty()
+            ? response()->json(['error' => 'Sem corridas no momento'], 404)
+            : response()->json($rides, 200);
+    }
+
 
     public function store(Request $request)
     {
@@ -69,8 +78,9 @@ class RideController extends Controller
             'data_hora_solicitacao' => now(),
             'data_hora_inicio' => now(),
         ]);
+        $valor = (float) $request->valor;
     
-        UpdateRideStatusJob::dispatch($ride);
+        UpdateRideStatusJob::dispatch($ride, 'Em Andamento', $request->driver_id, $valor);
     
         return response()->json($ride, 201);
     }
