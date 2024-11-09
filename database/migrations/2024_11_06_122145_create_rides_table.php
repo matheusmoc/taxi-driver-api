@@ -21,7 +21,7 @@ return new class extends Migration
             $table->timestamp('data_hora_solicitacao')->nullable();
             $table->timestamp('data_hora_inicio')->nullable();
             $table->timestamp('data_hora_fim')->nullable();
-            $table->decimal('valor', 8, 2)->nullable();
+            $table->decimal('valor', 8, 2);
             $table->timestamps();
         });
     }

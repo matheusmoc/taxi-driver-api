@@ -32,7 +32,6 @@ class RideRequestConsumer
             $ride = Ride::find($rideData['id']);
             $driverId = $rideData['driver_id'];
 
-            // Verificar se o motorista já está em uma corrida
             $motoristaOcupado = Ride::where('driver_id', $driverId)
                 ->where('status', 'Em Andamento')
                 ->exists();
@@ -43,14 +42,14 @@ class RideRequestConsumer
                 return;
             }
 
-            // Caso contrário, a corrida pode começar
+            $ride = Ride::find($rideData['id']);
             $ride->update([
                 'status' => 'Em Andamento',
-                'driver_id' => $driverId,
+                'driver_id' => $rideData['driver_id'],
+                'valor' => isset($rideData['valor']),
                 'data_hora_inicio' => now(),
             ]);
 
-            // Lógica para processar a corrida
             UpdateRideStatusJob::dispatch($ride);
         };
 

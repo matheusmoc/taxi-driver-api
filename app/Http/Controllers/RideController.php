@@ -88,20 +88,22 @@ class RideController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $ride = Ride::findOrFail($id);
-        $status = $request->input('status');
-        $driverId = $request->input('driver_id');
-        $valor = $request->input('valor');
     
-        if ($status === 'Em Andamento' && !$valor) {
-            return response()->json(['error' => 'O valor da corrida é obrigatório.'], 400);
+        // Validação para garantir que a corrida existe
+        if (!$ride) {
+            return response()->json(['message' => 'Ride not found'], 404);
         }
-    
-        $ride->update(['status' => $status, 'valor' => $valor]);
-        UpdateRideStatusJob::dispatch($ride, $status, $driverId);
-    
-        return response()->json(['message' => 'Status da corrida em atualização.'], 202);
-    }
 
+        $status = $request->input('status', $ride->status);  
+        $driverId = $request->input('driver_id', $ride->driver_id);  
+        $valor = $request->input('valor', $ride->valor);  
+    
+
+        UpdateRideStatusJob::dispatch($ride, $status, $driverId, $valor);
+    
+        return response()->json(['message' => 'Dados atualizados com sucesso', 'ride' => $ride], 200);
+    }
+    
     public function __destruct()
     {
         $this->channel->close();

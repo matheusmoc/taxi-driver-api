@@ -23,7 +23,7 @@ class UpdateRideStatusJob implements ShouldQueue
     public function __construct(Ride $ride, string $status, ?int $driverId = null, float $valor = 0.0)
     {
         $this->ride = $ride;
-        $this->status = $status;
+        $this->status = $status ?? '';
         $this->driverId = $driverId;
         $this->valor = $valor;
     }
@@ -33,6 +33,8 @@ class UpdateRideStatusJob implements ShouldQueue
      */
     public function handle()
     {
+        Log::info("Handling status update for Ride ID: {$this->ride->id} with new status: {$this->status}");
+    
         switch ($this->status) {
             case 'Em Andamento':
                 if ($this->ride->status === 'Aguardando Motorista') {
@@ -41,24 +43,22 @@ class UpdateRideStatusJob implements ShouldQueue
                         return;
                     }
     
-                    $this->ride->update([
-                        'status' => 'Em Andamento',
-                        'driver_id' => $this->driverId,
-                        'valor' => $this->valor > 0.0 ? $this->valor : $this->ride->valor,
-                        'data_hora_inicio' => now(),
-                    ]);
+                    $this->ride->status = 'Em Andamento';
+                    $this->ride->driver_id = $this->driverId;
+                    $this->ride->valor = $this->valor > 0.0 ? $this->valor : $this->ride->valor;
+                    $this->ride->data_hora_inicio = now();
+    
+                    $this->ride->save();
                 }
                 break;
     
             case 'Finalizada':
                 if ($this->ride->status === 'Em Andamento') {
-                    $this->ride->update([
-                        'status' => 'Finalizada',
-                        'data_hora_fim' => now(),
-                        'valor' => $this->ride->valor,
-                    ]);
-                    
-                    // Dispara o evento para liberar o motorista
+                    $this->ride->status = 'Finalizada';
+                    $this->ride->data_hora_fim = now();
+                    $this->ride->valor = $this->valor > 0.0 ? $this->valor : $this->ride->valor;
+    
+                    $this->ride->save();
                     event(new DriverAvailable($this->ride->driver_id));
                 }
                 break;
@@ -66,5 +66,5 @@ class UpdateRideStatusJob implements ShouldQueue
             default:
                 break;
         }
-    }    
+    }
 }
