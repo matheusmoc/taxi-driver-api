@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Jobs;
 
 use App\Events\DriverAvailable;
@@ -8,6 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class UpdateRideStatusJob implements ShouldQueue
 {
@@ -16,15 +18,14 @@ class UpdateRideStatusJob implements ShouldQueue
     protected $ride;
     protected $status;
     protected $driverId;
+    protected $valor;
 
-    /**
-     * Cria uma nova instância do Job.
-     */
-    public function __construct(Ride $ride, string $status, ?int $driverId = null)
+    public function __construct(Ride $ride, string $status, ?int $driverId = null, float $valor = 0.0)
     {
         $this->ride = $ride;
         $this->status = $status;
         $this->driverId = $driverId;
+        $this->valor = $valor;
     }
 
     /**
@@ -32,21 +33,38 @@ class UpdateRideStatusJob implements ShouldQueue
      */
     public function handle()
     {
-        if ($this->status === 'Em Andamento' && $this->ride->status === 'Aguardando Motorista') {
-            $this->ride->update([
-                'status' => 'Em Andamento',
-                'driver_id' => $this->driverId,
-                'data_hora_inicio' => now(),
-            ]);
-        } elseif ($this->status === 'Finalizada' && $this->ride->status === 'Em Andamento') {
-            $this->ride->update([
-                'status' => 'Finalizada',
-                'data_hora_fim' => now(),
-                'valor' => $this->ride->valor,
-            ]);
+        switch ($this->status) {
+            case 'Em Andamento':
+                if ($this->ride->status === 'Aguardando Motorista') {
+                    if (!$this->driverId) {
+                        Log::warning("Driver ID is missing while changing ride status to 'Em Andamento'. Ride ID: {$this->ride->id}");
+                        return;
+                    }
     
-            // Libera o motorista para novas corridas
-            event(new DriverAvailable($this->ride->driver_id));
+                    $this->ride->update([
+                        'status' => 'Em Andamento',
+                        'driver_id' => $this->driverId,
+                        'valor' => $this->valor > 0.0 ? $this->valor : $this->ride->valor,
+                        'data_hora_inicio' => now(),
+                    ]);
+                }
+                break;
+    
+            case 'Finalizada':
+                if ($this->ride->status === 'Em Andamento') {
+                    $this->ride->update([
+                        'status' => 'Finalizada',
+                        'data_hora_fim' => now(),
+                        'valor' => $this->ride->valor,
+                    ]);
+                    
+                    // Dispara o evento para liberar o motorista
+                    event(new DriverAvailable($this->ride->driver_id));
+                }
+                break;
+    
+            default:
+                break;
         }
-    }
+    }    
 }
