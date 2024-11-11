@@ -34,8 +34,26 @@ class RideController extends Controller
     }
 
 
+    public function show($id)
+    {
+        $ride = Ride::find($id);
+
+        return $ride
+            ? response()->json($ride, 200)
+            : response()->json(['error' => 'Corrida não encontrada'], 404);
+    }
+
+
     public function store(Request $request)
     {
+        $request->validate([
+            'passenger_id' => 'required|exists:passengers,id',
+            'driver_id' => 'required|exists:drivers,id',
+            'origem' => 'required|string|max:255',
+            'destino' => 'required|string|max:255',
+            'valor' => 'required|numeric|min:0',
+        ]);
+    
         $passenger = Passenger::findOrFail($request->passenger_id);
     
         // Verificar se o motorista está com uma corrida ativa
@@ -91,7 +109,7 @@ class RideController extends Controller
     
         // Validação para garantir que a corrida existe
         if (!$ride) {
-            return response()->json(['message' => 'Ride not found'], 404);
+            return response()->json(['message' => 'Corrida não encontrada'], 404);
         }
 
         $status = $request->input('status', $ride->status);  
