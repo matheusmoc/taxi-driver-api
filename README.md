@@ -1,66 +1,265 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# API de Corridas de Táxi
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Esta API permite gerenciar corridas de táxi, permitindo que passageiros solicitem corridas e motoristas as iniciem e finalizem. A API foi desenvolvida em [PHP/Laravel] e utiliza um banco de dados relacional [MySQL] para persistência dos dados.
 
-## About Laravel
+## Funcionalidades
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+A API oferece os seguintes recursos:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+1. **Cadastro de Passageiros e Motoristas**
+2. **Solicitação de Corrida** - Passageiros podem solicitar corridas com o status inicial "Aguardando Motorista".
+3. **Atualização do Status de Corrida** - Motoristas podem iniciar corridas (status "Em Andamento") e finalizá-las (status "Finalizada").
+4. **Consulta de Corrida** - Permite visualizar detalhes de uma corrida específica.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Endpoints
 
-## Learning Laravel
+### Passageiros
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- **POST /passengers** - Cadastrar um novo passageiro.
+  - **Request Body**:
+    ```json
+    {
+        "nome": "Matheus",
+        "telefone": "38992709671",
+        "updated_at": "2024-11-11T00:41:11.000000Z",
+        "created_at": "2024-11-11T00:41:11.000000Z",
+        "id": 1
+    }
+    ```
+  - **Response**: Status 201 e JSON com os dados do passageiro cadastrado.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### Motoristas
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **POST /drivers** - Cadastrar um novo motorista.
+  - **Request Body**:
+    ```json
+    {
+        "nome": "Motorista 1",
+        "carro": "sedan",
+        "telefone": "999999999",
+        "updated_at": "2024-11-11T00:41:52.000000Z",
+        "created_at": "2024-11-11T00:41:52.000000Z",
+        "id": 1
+    }
+    ```
+  - **Response**: Status 201 e JSON com os dados do motorista cadastrado.
 
-## Laravel Sponsors
+### Corridas
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- **POST /rides** - Criar uma nova corrida.
+  - **Request Body**:
+    ```json
+    {
+        "passenger_id": 1,
+        "status": "Em Andamento",
+        "driver_id": "1",
+        "origem": "Origem 1",
+        "destino": "Destino 1",
+        "valor": "30.00",
+        "data_hora_solicitacao": "2024-11-11T00:42:28.264023Z",
+        "data_hora_inicio": "2024-11-11T00:42:28.264032Z",
+        "updated_at": "2024-11-11T00:42:28.000000Z",
+        "created_at": "2024-11-11T00:42:28.000000Z",
+        "id": 1
+    }
+    ```
+  - **Response**: Status 201 e JSON com os dados da corrida criada.
 
-### Premium Partners
+- **PATCH /rides/{id}** - Atualizar o status de uma corrida.
+  - **Request Body**:
+    ```json
+    {
+        "message": "Dados atualizados com sucesso",
+        "ride": {
+            "id": 1,
+            "passenger_id": 1,
+            "driver_id": 1,
+            "status": "Finalizada",
+            "origem": "Origem 1",
+            "destino": "Destino 1",
+            "data_hora_solicitacao": "2024-11-11 00:42:28",
+            "data_hora_inicio": "2024-11-11 00:42:28",
+            "data_hora_fim": "2024-11-11 00:48:39",
+            "valor": "30.00",
+            "created_at": "2024-11-11T00:42:28.000000Z",
+            "updated_at": "2024-11-11T00:48:39.000000Z"
+        }
+    }
+    ```
+  - **Response**: Status 200 e JSON com os dados atualizados da corrida.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+- **GET /rides/{id}** - Listar os detalhes de uma corrida específica.
+  - **Response**: Status 200 e JSON com os detalhes da corrida.
+      ```json
+    {
+        "id": 1,
+        "passenger_id": 1,
+        "driver_id": 1,
+        "status": "Finalizada",
+        "origem": "Origem 1",
+        "destino": "Destino 1",
+        "data_hora_solicitacao": "2024-11-11 00:42:28",
+        "data_hora_inicio": "2024-11-11 00:42:28",
+        "data_hora_fim": "2024-11-11 00:48:39",
+        "valor": "100.00",
+        "created_at": "2024-11-11T00:42:28.000000Z",
+        "updated_at": "2024-11-11T00:48:39.000000Z"
+    }
+    ```
+## Regras de Negócio
 
-## Contributing
+1. **Criação de Corrida**: Uma corrida só pode ser criada se o passageiro existir.
+   ![image](https://github.com/user-attachments/assets/afe48c5b-5181-47e5-94ff-51809c210216)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+3. **Status "Em Andamento"**: Pode ser definido apenas se o status atual for "Aguardando Motorista", e é necessário informar o `motorista_id`.
+4. **Status "Finalizada"**: Pode ser definido apenas se o status atual for "Em Andamento".
 
-## Code of Conduct
+   ![image](https://github.com/user-attachments/assets/6ac9b272-fbde-4707-9b36-fe8d0a3e1ef1)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
 
-## Security Vulnerabilities
+## Instalação e Execução
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Pré-requisitos
 
-## License
+- Docker e Docker Compose instalados
+- Composer
+- RabbitMQ
+- PHP 8.1^
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Passo a Passo
+
+1. **Clone o repositório**:
+   ```bash
+   git clone https://github.com/matheusmoc/taxi-driver-api.git
+   cd taxi-driver-api
+   ```
+2. **Configurar o banco de dados**:
+   
+    No arquivo docker-compose.yml, ajuste as variáveis de ambiente (como DB_HOST, DB_USER, DB_PASSWORD, DB_DATABASE) conforme necessário.
+
+3. **Subir a aplicação e o banco de dados**:
+    ```bash
+    docker-compose up -d
+    ```
+4. **Configuração da API**:
+
+    Instale as dependências e configure a aplicação para se conectar ao banco de dados.
+
+## Diagrama de Entidade e Relacionamento (DER)
+
+![image](https://github.com/user-attachments/assets/47933504-5f14-4c94-ada9-73916b3a108c)
+
+
+## Estrutura do projeto
+
+```plaintext
+taxi-driver-api/
+├── app/
+│   ├── Console/
+│   ├── Events/
+│   │   └── DriverAvailable.php         # Evento para notificar quando um motorista está disponível
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   ├── PassengerController.php # Controlador para gerenciamento de passageiros
+│   │   │   ├── DriverController.php    # Controlador para gerenciamento de motoristas
+│   │   │   └── RideController.php      # Controlador para gerenciamento de corridas
+│   │   └── Requests/
+│   ├── Jobs/
+│   │   └── UpdateRideStatusJob.php     # Job para atualizar o status de uma corrida
+│   ├── Listeners/
+│   │   └── NotifyDriverAvailability.php # Listener para notificar a disponibilidade do motorista
+│   └── Models/
+│       ├── Ride.php                    # Modelo Ride com relacionamento e lógica adicional
+│       ├── Passenger.php               # Modelo Passenger
+│       └── Driver.php                  # Modelo Driver
+├── config/
+│   ├── app.php                         # Configuração principal do aplicativo
+│   ├── queue.php                       # Configuração da fila de tarefas (RabbitMQ)
+├── database/
+│   └── migrations/                     # Arquivos de migração do banco de dados
+├── routes/
+│   └── api.php                         # Rotas da API
+└── README.md                           # Documento com informações sobre o projeto
+```
+
+## Estrutura das filas com RabbitMQ
+
+1. **Execute o comando abaixo para processar as filas**
+   ```bash
+   php artisan queue:work
+   ```
+2. **Acesse o RabbitMQ local com RabbitMQ Management**
+   
+   ![image](https://github.com/user-attachments/assets/89f3f372-a37d-488a-9c3b-c41977e6bf53)
+
+4. **Crie uma corrida 'Em andamento' com o um passageiro de ID 1**
+   
+   ![image](https://github.com/user-attachments/assets/d94672c9-ff9d-4eaf-bc47-de043351c463)
+
+5. **Crie um passageiro de ID 2**
+   
+   ![image](https://github.com/user-attachments/assets/661eeb1b-35a4-4bae-9459-c27d68a2803b)
+
+6. **Coloque ela em uma corrida com o mesmo motorista**
+   
+   ![image](https://github.com/user-attachments/assets/e72f654e-61e1-45e2-b72a-3eb4e060e2c8)
+
+   Quando um motorista está finalizando a corrida de um passageiro (usuário de ID 1) e recebe uma nova solicitação de outro passageiro (usuário de ID 2), a nova corrida entra em um sistema de fila (ou Broker) até que o motorista esteja disponível, nesse contexto usamos    o tipo de fila FIFO (FIRST IN FIRST OUT).
+
+   ![image](https://github.com/user-attachments/assets/f185c986-0f5e-4ff9-8c17-1bd864573d01)
+
+7. **Após finalizar a primeira corrida mudando o status para 'Finalizada', a proxima corrida entra com status 'Em andamento' automaticamente**
+
+   ![image](https://github.com/user-attachments/assets/89979aa1-9813-44d1-b1b7-a5dafedbcc7f)
+
+   ![image](https://github.com/user-attachments/assets/772f5d1d-f25e-43a3-9d9a-c187f10fd8bc)
+
+
+
+## Teste dos Endpoints (Workspace de API)
+
+Para facilitar o teste dos endpoints da API, incluímos um workspace de API exportado em [Postman](https://www.postman.com/) com todas as rotas definidas. Você pode importar o arquivo no Postman ou Insomnia para executar as requisições rapidamente.
+
+[Download do Workspace de Testes](https://drive.google.com/file/d/123InssxwPypVdxcv4x_9H6QDZ2jizo2q/view?usp=sharing)
+
+### Importando o Workspace
+1. Baixe o arquivo JSON do workspace.
+2. No Postman:
+   - Clique em **File > Import**.
+   - Selecione o arquivo JSON baixado para importar.
+3. Após a importação, você verá todos os endpoints organizados no Postman para fácil acesso e testes.
+
+### Endpoints Disponíveis
+
+Aqui estão os principais endpoints incluídos no workspace:
+
+#### Passageiros
+- **POST** `/api/passengers` - Cadastrar um passageiro
+
+#### Motoristas
+- **POST** `/api/drivers` - Cadastrar um motorista
+
+#### Corridas
+- **POST** `/api/rides` - Criar uma nova corrida
+- **PATCH** `/api/rides/{id}` - Atualizar o status de uma corrida
+- **GET** `/api/rides/{id}` - Listar uma corrida específica pelo ID
+- **GET** `/api/rides` - Listar todas as corridas
+
+### Exemplos de Requisições
+Cada endpoint no workspace possui exemplos de requisições com os campos necessários e respostas esperadas. 
+
+### Configuração do Ambiente de Teste
+O workspace também está configurado com um ambiente base. Lembre-se de configurar a variável `base_url` do ambiente para apontar para a URL local ou de produção da API:
+
+- Local: `http://localhost:8000`
+- Produção: `http://seu_dominio.com`
+
+
+
+
+   
+   
+
+
+   
+
