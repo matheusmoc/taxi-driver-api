@@ -31,8 +31,10 @@ services:
     container_name: laravel_mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: taxi-driver
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_PASSWORD: root
+      MYSQL_USER: root
     volumes:
       - mysql_data:/var/lib/mysql
     ports:
