@@ -134,14 +134,40 @@ A API oferece os seguintes recursos:
    cd taxi-driver-api
    ```
 2. **Configurar o banco de dados**:
-   
-    No arquivo docker-compose.yml, ajuste as variáveis de ambiente (como DB_HOST, DB_USER, DB_PASSWORD, DB_DATABASE) conforme necessário.
 
-3. **Subir a aplicação e o banco de dados**:
+Cria um banco de dados local
+
+![image](https://github.com/user-attachments/assets/d2576a10-829e-4fea-b311-c0498df66169)
+
+No arquivo docker-compose.yml, ajuste as variáveis de ambiente (como MYSQL_ROOT_PASSWORD, MYSQL_DATABASE) conforme necessário.
+
+![image](https://github.com/user-attachments/assets/0ad8eb10-3c7f-4d0b-a73c-516c7d53a241)
+
+
+4. **Subir a aplicação, rabbitmq e o banco de dados**:
     ```bash
-    docker-compose up -d
+    docker-compose down         <--- remover todos os processos rodando
+    docker-compose up --build   <--- subir containers
     ```
-4. **Configuração da API**:
+5. **Certificar se os serviçoes estão rodando em suas respectivas portas corretamente**
+    ```bash
+    dokcer ps
+    ```
+
+   ![image](https://github.com/user-attachments/assets/83151c5a-c61c-4f95-afb2-281a7da56eb2)
+
+6. **Acessar a Aplicação e o RabbitMQ Management**
+    ```bash
+    http://localhost:15672/
+    http://localhost:8080/
+    ```
+
+    ****OBS: Caso ocorra problema de permissão basta fazer a liberação:****
+    ```bash
+    docker exec -it laravel_app chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+    ```
+    
+7. **Configuração da API**:
 
     Instale as dependências e configure a aplicação para se conectar ao banco de dados.
 
