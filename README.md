@@ -215,7 +215,7 @@ taxi-driver-api/
 
 1. **Execute o comando abaixo para processar as filas**
    ```bash
-   php artisan queue:work
+   docker exec -it laravel_app php artisan queue:work
    ```
 2. **Acesse o RabbitMQ local com RabbitMQ Management**
    
