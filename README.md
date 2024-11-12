@@ -146,8 +146,10 @@ No arquivo docker-compose.yml, ajuste as variáveis de ambiente (como MYSQL_ROOT
 
 4. **Subir a aplicação, rabbitmq e o banco de dados**:
     ```bash
-    docker-compose down         <--- remover todos os processos rodando
-    docker-compose up --build   <--- subir containers
+    docker-compose down                                    <--- remover todos os processos rodando
+    docker-compose up --build                              <--- subir containers
+    docker exec -it laravel_app php artisan key:generate   <--- gerar key de acesso
+    docker exec -it laravel_app php artisan migrate        <--- mapear migrations para o banco de dados
     ```
 5. **Certificar se os serviçoes estão rodando em suas respectivas portas corretamente**
     ```bash
@@ -166,10 +168,11 @@ No arquivo docker-compose.yml, ajuste as variáveis de ambiente (como MYSQL_ROOT
     ```bash
     docker exec -it laravel_app chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
     ```
-    
-7. **Configuração da API**:
 
-    Instale as dependências e configure a aplicação para se conectar ao banco de dados.
+7. **Copie o arquivo `.env.example` para criar o arquivo `.env`:**
+    ```bash
+    cp .env.example .env
+    ```
 
 ## Diagrama de Entidade e Relacionamento (DER)
 
