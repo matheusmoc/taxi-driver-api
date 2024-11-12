@@ -218,6 +218,7 @@ taxi-driver-api/
    docker exec -it laravel_app php artisan queue:work
    ```
 2. **Acesse o RabbitMQ local com RabbitMQ Management**
+   **OBS:** Por desfault o login e senha é **guest**
    
    ![image](https://github.com/user-attachments/assets/89f3f372-a37d-488a-9c3b-c41977e6bf53)
 
