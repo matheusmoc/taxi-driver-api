@@ -141,7 +141,7 @@ Cria um banco de dados local
 
 No arquivo docker-compose.yml, ajuste as variáveis de ambiente (como MYSQL_ROOT_PASSWORD, MYSQL_DATABASE) conforme necessário.
 
-![image](https://github.com/user-attachments/assets/0ad8eb10-3c7f-4d0b-a73c-516c7d53a241)
+![image](https://github.com/user-attachments/assets/6a12fd0b-7b8c-41ad-9401-5926633afded)
 
 
 4. **Subir a aplicação, rabbitmq e o banco de dados**:
