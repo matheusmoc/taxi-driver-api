@@ -135,11 +135,11 @@ A API oferece os seguintes recursos:
    ```
 2. **Configurar o banco de dados**:
 
-Cria um banco de dados local
+    Cria um banco de dados local
+    
+    ![image](https://github.com/user-attachments/assets/d2576a10-829e-4fea-b311-c0498df66169)
 
-![image](https://github.com/user-attachments/assets/d2576a10-829e-4fea-b311-c0498df66169)
-
-No arquivo docker-compose.yml, ajuste as variáveis de ambiente (como MYSQL_ROOT_PASSWORD, MYSQL_DATABASE) conforme necessário.
+No arquivo docker-compose.yml, ajuste as variáveis de ambiente (como MYSQL_ROOT_PASSWORD, MYSQL_DATABASE) conforme necessário
 
 ![image](https://github.com/user-attachments/assets/6a12fd0b-7b8c-41ad-9401-5926633afded)
 
@@ -282,7 +282,7 @@ Cada endpoint no workspace possui exemplos de requisições com os campos necess
 ### Configuração do Ambiente de Teste
 O workspace também está configurado com um ambiente base. Lembre-se de configurar a variável `base_url` do ambiente para apontar para a URL local ou de produção da API:
 
-- Local: `http://localhost:8000`
+- Local: `http://localhost:8080`
 - Produção: `http://seu_dominio.com`
 
 
